@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  username           String
+  email              String
+  gender             String
+  passwrod           String
+  user_Address       User_Address[]
+  review_reataurants Review_reataurants[]
+  restaurants        Restaurants[]
+}
+
+model User_Address {
+  id                Int                @id @default(autoincrement())
+  number            String?
+  village           String?
+  alley             String?
+  road              String?
+  distrct           String?
+  provincr          String
+  postal_Code       String
+  detail            String?
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId            Int                @map("user_id")
+  search_localtions Search_localtion[]
+}
+
+model Search_localtion {
+  id                    Int                 @id @default(autoincrement())
+  distance              String
+  user_address          User_Address        @relation(fields: [user_addressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user_addressId        Int                 @map("user_address_id")
+  restaurants_Address   Restaurants_Address @relation(fields: [restaurants_AddressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  restaurants_AddressId Int                 @map("restaurants_address_id")
+}
+
+model Restaurants_Address {
+  id                Int                @id @default(autoincrement())
+  number            String?
+  village           String?
+  alley             String?
+  road              String?
+  distrct           String?
+  provincr          String
+  postal_Code       String
+  detail            String?
+  restaurants       Restaurants        @relation(fields: [restaurantsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  restaurantsId     Int                @map("restaurants_id")
+  search_localtions Search_localtion[]
+}
+
+model Review_reataurants {
+  id            Int         @id @default(autoincrement())
+  title         String
+  comment       String
+  image_review  String
+  rating        String?
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        Int         @map("user_id")
+  restaurants   Restaurants @relation(fields: [restaurantsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  restaurantsId Int         @map("restaurant_id")
+}
+
+model Restaurants {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  type                String
+  detail              String?
+  tal                 String
+  open_day            String?
+  close_day           String?
+  open_time           String?
+  close_time          String?
+  status              String
+  restaurants_Address Restaurants_Address[]
+  review_reataurants  Review_reataurants[]
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId              Int                   @map("user_id")
+  menu                Menu[]
+  image_restaurants   Image_restaurants[]
+}
+
+model Menu {
+  id            Int         @id @default(autoincrement())
+  name          String
+  image_food    String
+  price         String
+  detail        String?
+  restaurants   Restaurants @relation(fields: [restaurantsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  restaurantsId Int         @map("restaurnats_id")
+}
+
+model Image_restaurants {
+  id            Int         @id @default(autoincrement())
+  name          String
+  detail        String
+  restaurants   Restaurants @relation(fields: [restaurantsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  restaurantsId Int @map("restaurants_id")
+}
